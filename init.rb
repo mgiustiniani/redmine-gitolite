@@ -12,10 +12,10 @@ Redmine::Plugin.register :redmine_gitolite do
   description 'Enables Redmine to manage gitolite repositorie.'
   version '0.0.1'
   settings :default => {
-    'gitoliteUrl' => 'gitolite@localhost:gitolite-admin.git',
-    'developerBaseUrls' => "git@example.com:%{name}.git",
-    'readOnlyBaseUrls' => 'http://example.com/git/%{name}',
-    'basePath' => '/home/redmine/repositories/',
+    'gitoliteUrl' => 'git@localhost:gitolite-admin.git',
+    'developerBaseUrls' => "git@git.geekinside.it:%{name}.git",
+    'readOnlyBaseUrls' => 'http://git.geekinside.it/git/%{name}',
+    'basePath' => '/opt/redmine/repositories/',
     }, 
     :partial => 'redmine_gitolite'
 end

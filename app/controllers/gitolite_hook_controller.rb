@@ -8,7 +8,7 @@ class GitoliteHookController < ApplicationController
     repository = find_repository
     update_repository(repository)
     repository.fetch_changesets
-    render(:text => 'OK')
+    render(:text => 'OK' + repository.url)
   end
 
   private
@@ -28,6 +28,7 @@ class GitoliteHookController < ApplicationController
   def update_repository(repository)
     origin = Setting.plugin_redmine_gitolite['developerBaseUrls'].lines.first
     origin = origin.gsub("%{name}", repository.identifier)
+    logger.error {"echo  #{origin} #{repository.url}> /var/redmine.log"}
     exec("git clone --mirror '#{origin}' '#{repository.url}'") if !File.directory?(repository.url)
     exec("cd '#{repository.url}' && git fetch origin && git remote prune origin && git reset --soft FETCH_HEAD")
   end
@@ -47,8 +48,9 @@ class GitoliteHookController < ApplicationController
   end
 
   def find_repository
-    project = find_project
-    repository = project.repositories.select{|r| r.identifier == params[:repo_id]}.first
+    #project = find_project
+    # repository = project.repositories.select{|r| r.identifier == params[:repo_id]}.first
+    repository = Repository.find_by_identifier_param(params[:repo_id]) 
     raise TypeError, "Project '#{project.to_s}' ('#{project.identifier}') has no repository identified by #{params[:repo_id]}" if repository.nil?
     raise TypeError, "Repository identified by #{params[:repo_id]} for project '#{project.to_s}' ('#{project.identifier}') is not a Git repository" unless repository.is_a?(Repository::Git)
     return repository
